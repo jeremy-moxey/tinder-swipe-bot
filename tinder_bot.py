@@ -1,6 +1,8 @@
 from selenium import webdriver
 from time import sleep
 from selenium.common.exceptions import NoSuchElementException
+import numpy as np
+from numpy import random
 
 from secrets import username, password
 
@@ -23,7 +25,10 @@ class TinderBot():
         check_more_options = check_exists_by_xpath('//button[text()="More Options"]')
         if (check_more_options != None):
             check_more_options.click()
-
+        
+        accept_cookie = self.driver.find_element_by_xpath('//*[@id="content"]/div/div[2]/div/div/div[1]/div/button')
+        accept_cookie.click()
+        
         sleep(2)
 
         fb_btn = self.driver.find_element_by_css_selector('button[aria-label="Log in with Facebook"]')
@@ -53,9 +58,15 @@ class TinderBot():
 
         popup_2 = self.driver.find_element_by_css_selector('button[aria-label="Not interested"]')
         popup_2.click()
+        
+        sleep(4)
 
-        self.auto_swipe()
-
+        passport_popup = self.driver.find_element_by_css_selector('button[aria-label="Close"]')
+        passport_popup.click()
+        
+        #self.auto_swipe()
+        self.alt_swipe()
+        
     def like(self):
         like_btn = self.driver.find_element_by_css_selector('button[aria-label="Like"]')
         like_btn.click()
@@ -78,6 +89,24 @@ class TinderBot():
                     except Exception:
                         self.close_tinder_plus()
 
+    def alt_swipe(self):
+        while True:
+            sleep(2)
+            try:
+                coin = np.random.binomial(n=1, p=0.5, size=None)
+                if coin == 1:
+                    self.like()
+                else:
+                    self.dislike()
+            except Exception:
+                try:
+                    self.close_popup()
+                except Exception:
+                    try:
+                        self.close_match()
+                    except Exception:
+                        self.close_tinder_plus()
+    
     def close_popup(self):
         popup_3 = self.driver.find_element_by_xpath('//span[text()="Not interested"]')
         popup_3.click()
